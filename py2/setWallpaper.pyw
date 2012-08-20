@@ -11,8 +11,8 @@ if __name__ == "__main__":
     import GEIS, datetime
     p = GEIS.plot(configFile='json/config.json')
     p.createMap(resolution='c', projection='merc')
-    p.loadImage(imageFile='NaturalEarth2_Mercator_Dell.png', zorder=1, origin='upper')
-    p.loadImage(imageFile='wx.png', zorder=3, origin='upper', alpha=0.4)
+    p.loadImage(imageFile='img/NaturalEarth2_Mercator_Dell.png', zorder=1, origin='upper')
+    p.loadImage(imageFile='data/wx.png', zorder=3, origin='upper', alpha=0.35)
     p.plotDaylightRadiation(interpolation='bicubic', zorder=2)
     p.plotTropicalWX("json/hurricane.json", txtX=0.68889)
     p.plotWorldtime("json/clocks.json")

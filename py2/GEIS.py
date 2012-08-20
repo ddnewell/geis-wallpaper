@@ -92,8 +92,7 @@ class plot:
             "widthAdj": 0.5,
             "heightAdj": 0.5,
             "nightTransparency": 0.25,
-            "termResolution": 0.05,
-            "transparencyRange": (0.3, 0.0)
+            "termResolution": 0.05
         }
 
         # Load configuration
@@ -228,6 +227,8 @@ class plot:
             raise Exception('Map not yet generated!')
         # Time format
         fmt = '%H:%M'
+        # Initialize counter
+        n = 0
         # Load clock definition json file
         if not clockFile == None:
             try:
@@ -238,6 +239,8 @@ class plot:
                     txtparams = j['formatting']['text']
                     # Point parameters
                     ptparams = j['formatting']['point']
+                    # Get colors
+                    colors = j['formatting']['colors']
                     # Get display latitude & offset
                     dlat = j['formatting']['display']['lat']
                     doffset = j['formatting']['display']['offset']
@@ -286,14 +289,19 @@ class plot:
                             clockPos = y - (28 / self.cfg["screenSize"][1])
                         else:
                             # City name & clock lat above reference point
-                            cityPos = y + (18 / self.cfg["screenSize"][1])
-                            clockPos = y + (7 / self.cfg["screenSize"][1])
+                            cityPos = y + (20 / self.cfg["screenSize"][1])
+                            clockPos = y + (9 / self.cfg["screenSize"][1])
                         # Add city and reference point to map
-                        self.plotPoint(lon=dlon, lat=clocks[city]['lat'], c=clocks[city]['c'], **ptparams)
-                        self.plotPoint(lon=dlon, lat=dlat, c=clocks[city]['c'], **ptparams)
+                        self.plotPoint(lon=dlon, lat=clocks[city]['lat'], c=colors[n], **ptparams)
+                        self.plotPoint(lon=dlon, lat=dlat, c=colors[n], **ptparams)
                         # Add location and time text to map above reference point
                         self.addTextToFig(x=x, y=cityPos, text='%s' % (city,), **txtparams)
                         self.addTextToFig(x=x, y=clockPos, text='%s' % (localTime.strftime(fmt),), **txtparams)
+                        # Update counter
+                        n += 1
+                        # Cycle through colors
+                        if n >= len(colors):
+                            n = 0
             except:
                 print "Error loading world time..."
     
@@ -323,7 +331,10 @@ class plot:
         }
         tropicalImg = {}
         tropicalFutureImg = {}
-        resizeFactor = 0.8
+        resizeFactor = {
+                "current": 1.0,
+                "future": 1.0
+            }
         imgSize = None
         tropicalText = {
                 "size"      : 8, 
@@ -365,16 +376,16 @@ class plot:
                         # Load icon and resize
                         if cat not in tropicalImg:
                             icon = Image.open(tropicalImgBasePath + tropicalImgPath[cat])
-                            tropicalImg[cat] = np.asarray(icon.resize((int(icon.size[0]*resizeFactor), int(icon.size[1]*resizeFactor))))
+                            tropicalImg[cat] = np.asarray(icon.resize((int(icon.size[0]*resizeFactor["current"]), int(icon.size[1]*resizeFactor["current"]))))
                             if imgSize == None:
-                                imgSize = (int(icon.size[0]*resizeFactor), int(icon.size[1]*resizeFactor))
+                                imgSize = (int(icon.size[0]*resizeFactor["current"]), int(icon.size[1]*resizeFactor["current"]))
                             icon = None
                         # Get icon size
                         icoW = imgSize[0]
                         icoH = imgSize[1]
                         # Plot storm
                         self.figure.figimage(tropicalImg[cat], xo=cx-icoW/2, yo=cy-icoH/2, zorder=9, alpha=0.8)
-                        self.figure.text((cx+icoW/3)/self.cfg["screenSize"][0], (cy-icoH-2.8)/self.cfg["screenSize"][1], name, **tropicalText)
+                        self.figure.text((cx+icoW/3)/self.cfg["screenSize"][0], (cy-icoH-2.75)/self.cfg["screenSize"][1], name, **tropicalText)
                         # Set previous point
                         prevPt = {
                                     "cat": cat,
@@ -405,9 +416,9 @@ class plot:
                             # Load icon and resize
                             if cat not in tropicalFutureImg:
                                 icon = Image.open(tropicalFutureImgBasePath + tropicalImgPath[cat])
-                                tropicalFutureImg[cat] = np.asarray(icon.resize((int(icon.size[0]*resizeFactor), int(icon.size[1]*resizeFactor))))
+                                tropicalFutureImg[cat] = np.asarray(icon.resize((int(icon.size[0]*resizeFactor["future"]), int(icon.size[1]*resizeFactor["future"]))))
                                 if imgSize == None:
-                                    imgSize = (int(icon.size[0]*resizeFactor), int(icon.size[1]*resizeFactor))
+                                    imgSize = (int(icon.size[0]*resizeFactor["future"]), int(icon.size[1]*resizeFactor["future"]))
                                 icon = None
                             # Get icon size
                             icoW = imgSize[0]

@@ -8,14 +8,12 @@
 		"latOffset": 1.0,
 		"maxLon": 180.0,
 		"minLon": -180.0,
-		"_lonInterval": 0.591,
 		"lonInterval": 1.5,
 		"screenSize": [1366, 768],
 		"dpi": 96,
 		"widthAdj": 0.5,
 		"heightAdj": 0.5,
 		"nightTransparency": 0.25,
-		"termResolution": 0.05,
-		"transparencyRange": [0.3, 0.0]
+		"termResolution": 0.05
 	}
 }

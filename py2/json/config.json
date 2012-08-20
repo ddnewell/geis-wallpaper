@@ -1,0 +1,13 @@
+{
+	"config": {
+		"blueMarbleMapScale": 0.35,
+		"latIntervalRange": 3.9,
+		"latInterval": 0.05,
+		"latOffset": 1.0,
+		"lonInterval": 1.5,
+		"screenSize": [1366, 768],
+		"dpi": 96,
+		"nightTransparency": 0.25,
+		"termResolution": 0.05
+	}
+}

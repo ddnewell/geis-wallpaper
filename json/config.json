@@ -1,0 +1,10 @@
+{
+    "config": {
+        "lat_interval_range": 3.9,
+        "lat_interval": 0.05,
+        "lat_offset": 1.0,
+        "lon_interval": 1.5,
+        "screen_size": [2560, 1280],
+        "dpi": 96
+    }
+}

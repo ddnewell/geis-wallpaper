@@ -1,0 +1,141 @@
+{
+    "clock_format": {
+        "Display Name" : {
+            "lon": -95.3,
+            "lat": 29.6,
+            "tz": "US/Central"
+        }
+    },
+    "formatting": {
+        "text": {
+            "size"      : 15,
+            "ha"        : "center",
+            "va"        : "baseline",
+            "family"    : "serif",
+            "weight"    : "semibold",
+            "stretch"   : "expanded",
+            "alpha"     : 1.0
+        },
+        "point": {
+            "s"         : 100,
+            "marker"    : "o",
+            "lw"        : 0.25,
+            "zorder"    : 10,
+            "alpha"     : 1.0
+        },
+        "display": {
+            "lat": -74,
+            "offset": 15
+        },
+        "colors": [
+            "#b2df8a",
+            "#ff7f00",
+            "#cab2d6",
+            "#e31a1c",
+            "#fdbf6f",
+            "#6a3d9a",
+            "#fb9a99",
+            "#a6cee3",
+            "#1f78b4",
+            "#ffff99",
+            "#33a02c"
+        ]
+    },
+    "clocks": {
+        "SFO" : {
+            "lon": -122.2,
+            "lat": 37.42,
+            "tz": "US/Pacific"
+        },
+        "HNL" : {
+            "lon": -157.85826988561186,
+            "lat": 21.307001044273267,
+            "tz": "US/Hawaii"
+        },
+        "DEN" : {
+            "lon": -106.5,
+            "lat": 39.74,
+            "tz": "US/Mountain"
+        },
+        "HOU" : {
+            "lon": -95.278888,
+            "lat": 29.645419,
+            "tz": "US/Central"
+        },
+        "NYC" : {
+            "lon": -74.00592573426336,
+            "lat": 40.7144039602474,
+            "tz": "US/Eastern"
+        },
+        "GRU" : {
+            "lon": -46.638753972131965,
+            "lat": -23.548921483335253,
+            "tz": "America/Sao_Paulo"
+        },
+        "LON" : {
+            "lon": -0.12,
+            "lat": 51.5,
+            "tz": "Europe/London"
+        },
+        "BER" : {
+            "lon": 13.398889,
+            "lat": 52.500556,
+            "tz": "Europe/Berlin"
+        },
+        "AMM": {
+            "lon": 35.933333,
+            "lat": 31.933333,
+            "tz": "Asia/Amman"
+        },
+        "MOW" : {
+            "lon": 37.6176647445313,
+            "lat": 55.75585020857309,
+            "tz": "Europe/Moscow"
+        },
+        "DXB" : {
+            "lon": 55.31170142207517,
+            "lat": 25.264506396060682,
+            "tz": "Asia/Dubai"
+        },
+        "DEL" : {
+            "lon": 77.22498415127225,
+            "lat": 28.635358763353015,
+            "tz": "Asia/Kolkata"
+        },
+        "BKK" : {
+            "lon": 100.493889,
+            "lat": 13.752222,
+            "tz": "Asia/Bangkok"
+        },
+        "HKG" : {
+            "lon": 114.158889,
+            "lat": 22.278333,
+            "tz": "Asia/Hong_Kong"
+        },
+        "SYD" : {
+            "lon": 151.21116441699496,
+            "lat": -33.85991741399278,
+            "tz": "Australia/Sydney"
+        },
+        "TYO" : {
+            "lon": 139.69172891760888,
+            "lat": 35.6895526991927,
+            "tz": "Asia/Tokyo"
+        },
+        "AKL" : {
+            "lon": 174.739869,
+            "lat": -36.848415576882836,
+            "tz": "Pacific/Auckland"
+        },
+        "MNL" : {
+            "lon": 120.966667,
+            "lat": 14.583333,
+            "tz": "Asia/Manila"
+        },
+        "JNB" : {
+            "lon": 28.045556,
+            "lat": -26.204444,
+            "tz": "Africa/Johannesburg"
+        }
+    }
+}

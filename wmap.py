@@ -12,7 +12,11 @@ Copyright 2012 Newell Designs, David Newell.
 # --------------------------------------------------------
 
 from __future__ import division
-import os, datetime, time, subprocess, json, pytz, math, logging
+
+import matplotlib
+matplotlib.use('Agg')
+
+import os, datetime, time, json, pytz, math, logging
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -96,6 +100,9 @@ class Plot(object):
         self._map = None
         # Initialize file save tracker
         self.saved = False
+        # Satellite and tropical shell scripts
+        self._sat_script = cfg['sat_script'] if 'sat_script' in cfg else './get_satellite.mac.sh'
+        self._tropical_script = cfg['tropical_script'] if 'tropical_script' in cfg else './get_tropical.mac.sh'
 
     def plot_daylight(self, *args, **kwargs):
         """Plot daylight radiation using Pysolar calculations on LatLon grid"""
@@ -189,7 +196,9 @@ class Plot(object):
         n = 0
         # Load clock definition json file
         if not clockFile == None:
-            # try:
+            # Plot background
+            self._map.fill([-180, -180, 180, 180], [-90, -64.25, -64.25, -90], transform=ccrs.PlateCarree(), alpha=0.5, color='white', zorder=2)
+            self._map.fill([-180, -180, 180, 180], [-90, -64.25, -64.25, -90], transform=ccrs.PlateCarree(), alpha=0.4, color='wheat', zorder=3)
             with open(clockFile) as cf:
                 # Parse JSON
                 j = json.load(cf)
@@ -253,8 +262,6 @@ class Plot(object):
                     # Cycle through colors
                     if n >= len(colors):
                         n = 0
-            # except:
-            #     logging.warning('Error loading world time...')
 
     def plot_tropical_wx(self, tropicalFile=None, txtX=0.968, txtY=0.015, **kwargs):
         """Plot tropical weather data from json provided by Weather Underground API"""
@@ -290,7 +297,12 @@ class Plot(object):
                 'va'        : 'baseline',
                 'family'    : 'sans serif',
                 'stretch'   : 'expanded',
-                'alpha'     : 0.7
+                'alpha'     : 0.7,
+                'bbox': {
+                    'facecolor': 'wheat',
+                    'alpha': 0.5,
+                    'boxstyle': 'round'
+                }
             }
         updateTextFmt = {
                 'color': '#a60000',
@@ -307,7 +319,7 @@ class Plot(object):
         lastUpdate = os.path.getmtime(tropicalFile)
         # If more than half an hour old, try to update
         if lastUpdate < time.time() - 1800:
-            os.system('./get_tropical.mac.sh')
+            os.system(self._tropical_script)
         # Update last update time
         lastUpdate = os.path.getmtime(tropicalFile)
         # Load tropical data
@@ -423,7 +435,7 @@ class Plot(object):
         lastUpdate = os.path.getmtime(imageFile)
         # If more than an hour old, try to update
         if lastUpdate < time.time() - 3600:
-            os.system('./get_satellite.mac.sh')
+            os.system(self._sat_script)
         # Update last update time
         lastUpdate = os.path.getmtime(imageFile)
 

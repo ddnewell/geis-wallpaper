@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>at.newell.geis.changewallpaper</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/dnewell/dev/geis-wallpaper/set_wallpaper.mac.sh</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>300</integer>
+</dict>
+</plist>

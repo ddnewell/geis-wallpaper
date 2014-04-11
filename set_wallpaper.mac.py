@@ -20,7 +20,7 @@ if __name__ == '__main__':
         p.load_image(imageFile='data/wx.png', zorder=3, origin='upper', alpha=0.35, extent=[-180, 180, -89, 89])
     except:
         pass
-    p.plot_daylight_radiation(zorder=2)
+    p.plot_daylight(zorder=2)
     p.plot_tropical_wx('json/hurricane.json')
     p.plot_worldtime('json/clocks.json')
     p.plot_daylight_update_time()

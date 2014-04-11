@@ -8,7 +8,7 @@ Copyright 2012 Newell Designs, David Newell.
 """
 
 # --------------------------------------------------------
-#  Import useful modules
+#  Import modules
 # --------------------------------------------------------
 
 from __future__ import division
@@ -38,7 +38,15 @@ class Plot(object):
     :type config_file: str
    """
     def __init__(self, current_date=None, save_file=None, config_file=None):
-        """Constructor - Initialize plotting setup"""
+        """ Create a map plot
+
+        :param now: Current date and time
+        :type now: datetime
+        :param save_file: Filename for saved file
+        :type save_file: str
+        :param config_file: Configuration filename
+        :type config_file: str
+        """
         # If no configuration file specified, raise error
         if config_file == None:
             raise Exception('No configuration file specified!')
@@ -54,9 +62,8 @@ class Plot(object):
         self._utc_now = self._utc_now.replace(tzinfo=pytz.utc)
         self._local_now = datetime.datetime.now()
 
-        # Terminator objects
-        self._irr = daylight.irradiation(now=self._utc_now)
-        self._term = daylight.terminator(now=self._utc_now)
+        # Daylight object
+        self._daylight = daylight.daylight(now=self._utc_now)
 
         # Load configuration
         cfg = {}
@@ -67,10 +74,6 @@ class Plot(object):
             pass
         # Set configuration variables (or defaults)
         self._dpi = cfg['dpi'] if 'dpi' in cfg else 96
-        self._lat_interval = cfg['lat_interval'] if 'lat_interval' in cfg else 0.05
-        self._lon_interval = cfg['lon_interval'] if 'lon_interval' in cfg else 1.5
-        self._lat_offset = cfg['lat_offset'] if 'lat_offset' in cfg else 1.0
-        self._lat_interval_range = cfg['lat_interval_range'] if 'lat_interval_range' in cfg else 3.9
         self._screen_size = cfg['screen_size'] if 'screen_size' in cfg else (1366, 768)
         # Calculate plot size
         self._plot_size = (self._screen_size[0]/self._dpi, self._screen_size[0]/self._dpi/2)
@@ -80,6 +83,10 @@ class Plot(object):
         # Set min/max latitude
         self._max_lat = 90
         self._min_lat = -90
+        # Map extent
+        self._extent = [self._min_lon, self._max_lon, self._min_lat, self._max_lat]
+        # Set darkness parameter for daylight
+        self._darkness = cfg['darkness'] if 'darkness' in cfg else 0.8
         # Latitude and longitude ranges
         self._lat_range = self._max_lat - self._min_lat
         self._lon_range = self._max_lon - self._min_lon
@@ -90,32 +97,31 @@ class Plot(object):
         # Initialize file save tracker
         self.saved = False
 
-    def plot_daylight_radiation(self, *args, **kwargs):
+    def plot_daylight(self, *args, **kwargs):
         """Plot daylight radiation using Pysolar calculations on LatLon grid"""
         # If no map specified, raise error
         if self._map == None:
             raise Exception('Map not yet generated!')
         # Get daylight grid
-        radiation = self._irr.calc_daylight_mesh(self._lon_interval,
-                                                                        self._lon_range,
-                                                                        self._lat_interval,
-                                                                        self._lat_interval_range,
-                                                                        latOffset=self._lat_offset,
-                                                                        fast=True, arrayGrid=True)
+        radiation = self._daylight.daylight_mesh(resolution=(540, 270), extent=self._extent, fast=True)
         # Normalize daylight
         radiation /= radiation.max()
-        radiation[:, :, 3] = 1. - radiation[:, :, 3]
-        radiation = np.ma.masked_less(radiation, 0.).filled(0.)
-        radiation = np.ma.masked_greater(radiation, 0.65).filled(0.65)
+        radiation[:, :, 3] = 1 - radiation[:, :, 3]
+        # radiation = np.ma.masked_less(radiation, 0).filled(0)
+        radiation = np.ma.masked_greater(radiation, self._darkness).filled(self._darkness)
         # Plot daylight on map
-        self._map.imshow(radiation, interpolation='bicubic', extent=[self._min_lon, self._max_lon, self._min_lat, self._max_lat], *args, **kwargs)
+        self._map.imshow(radiation, interpolation='bicubic', extent=self._extent, transform=ccrs.PlateCarree(), *args, **kwargs)
 
     def plot_terminator(self, *args, **kwargs):
         """Plot terminator line on map"""
         # If no map specified, raise error
         if self._map == None:
             raise Exception('Map not yet generated!')
-        # TODO: Plot terminator
+        # Get terminator points
+        term_points = self._daylight.terminator_position(resolution=1000)
+        # Plot points
+        for pt in term_points:
+            self._map.plot(pt[0], pt[1], transform=ccrs.PlateCarree(), *args, **kwargs)
 
     def plot_point(self, lon=None, lat=None, *args, **kwargs):
         """Plot point on map"""
@@ -136,12 +142,19 @@ class Plot(object):
         # Plot specified point on map
         self._map.scatter(lons, lats, transform=ccrs.PlateCarree(), *args, **kwargs)
 
-    def plot_great_circle(self, *args, **kwargs):
-        """Wrapper for great circle path drawing function in Basemap"""
+    def plot_great_circle(self, start, end, *args, **kwargs):
+        """Draw a great circle path on map
+
+        :param start: Starting point (lon, lat)
+        :type start: tuple
+        :param end: Ending point (lon, lat)
+        :type end: tuple
+        """
         # If no map specified, raise error
         if self._map == None:
             raise Exception('Map not yet generated!')
-        # TODO: Plot great circle on map
+        # Plot great circle
+        self._map.plot(start, end, transform=ccrs.Geodetic(), *args, **kwargs)
 
     def add_text_to_map(self, text=None, lon=None, lat=None, *args, **kwargs):
         """Add text to map at specified geographical location"""
@@ -200,7 +213,7 @@ class Plot(object):
                     # Convert to local time
                     localTime = self._utc_now.astimezone(pytz.timezone(clocks[city]['tz']))
                     # Get sun altitude at location
-                    sunAlt = self._irr.calc_sun_alt_at_point(clocks[city]['lon'], clocks[city]['lat'], True)
+                    sunAlt = self._daylight.sun_alt_at_point(clocks[city]['lon'], clocks[city]['lat'], True)
                     # Color according to sun altitude
                     if sunAlt < -8.:
                         txtparams["color"] = '#09041c'
@@ -451,7 +464,7 @@ class Plot(object):
         # If transparency color not specified
         if replaceColor == None:
             # Read specified image and add to map
-            self._map.imshow(plt.imread(imageFile), *args, **kwargs)
+            self._map.imshow(plt.imread(imageFile), transform=ccrs.PlateCarree(), *args, **kwargs)
         else:
             # Open image and get data
             img = Image.open(imageFile)
@@ -463,7 +476,7 @@ class Plot(object):
             # Update image data
             img.putdata(newData)
             # Add image to map
-            self._map.imshow(img, *args, **kwargs)
+            self._map.imshow(img, transform=ccrs.PlateCarree(), *args, **kwargs)
 
     def set_wallpaper(self):
         """Save map as bmp format and set it as the wallpaper"""

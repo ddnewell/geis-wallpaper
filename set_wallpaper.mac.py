@@ -4,7 +4,7 @@
 @license: MIT
 
 Global Event Information System
-Copyright 2012 Newell Designs, David Newell.
+Copyright 2014 Newell Designs, David Newell.
 """
 
 if __name__ == '__main__':
@@ -23,6 +23,7 @@ if __name__ == '__main__':
     p.plot_daylight(zorder=2)
     p.plot_tropical_wx('json/hurricane.json')
     p.plot_worldtime('json/clocks.json')
+    p.plot_ships('json/ships.json')
     p.plot_daylight_update_time()
     p.set_wallpaper()
 

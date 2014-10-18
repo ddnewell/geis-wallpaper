@@ -103,6 +103,7 @@ class Plot(object):
         # Satellite and tropical shell scripts
         self._sat_script = cfg['sat_script'] if 'sat_script' in cfg else './get_satellite.mac.sh'
         self._tropical_script = cfg['tropical_script'] if 'tropical_script' in cfg else './get_tropical.mac.sh'
+        self._ship_script = cfg['ship_script'] if 'ship_script' in cfg else './get_ships.mac.sh'
 
     def plot_daylight(self, *args, **kwargs):
         """Plot daylight radiation using Pysolar calculations on LatLon grid"""
@@ -213,7 +214,7 @@ class Plot(object):
                 doffset = j['formatting']['display']['offset']
                 # Sort locations
                 clocks = j['clocks']
-                sortCities = tuple(sorted(j['clocks'].iteritems(), key=lambda k: k[1]['lon']))
+                sortCities = tuple(sorted(j['clocks'].items(), key=lambda k: k[1]['lon']))
                 cityDirection = [False for i in range(len(sortCities))]
                 # Add each city to map
                 for i in range(len(sortCities)):
@@ -438,6 +439,50 @@ class Plot(object):
             os.system(self._sat_script)
         # Update last update time
         lastUpdate = os.path.getmtime(imageFile)
+
+    def plot_ships(self, shipFile=None, txtX=0.5, txtY=0.015, *args, **kwargs):
+        """Update and plot ship locations based on time since last update"""
+        # Raise error if figure,  map,  or filename do not exist
+        if self._figure == None or self._map == None:
+            raise Exception('Map not yet generated!')
+        if shipFile == None:
+            raise Exception('Ship location filename not specified.')
+        # Get last update time
+        lastUpdate = os.path.getmtime(shipFile)
+        # If more than 5 minutes old, try to update
+        if lastUpdate < time.time() - 300:
+            os.system(self._ship_script)
+        # Update last update time
+        lastUpdate = os.path.getmtime(shipFile)
+        # Load ship data
+        with open(shipFile) as f:
+            ships = json.load(f)
+        # Point format
+        pointfmt = {
+            "s": 75,
+            "marker": "d",
+            "lw": 0.25,
+            "zorder": 10,
+            "alpha": 1.0,
+            "color": "#adcefa"
+        }
+        # Plot points to map
+        for ship in ships['objects']:
+            self.plot_point(lon=ship['vessel']['longitude'], lat=ship['vessel']['latitude'], **pointfmt)
+        # Plot update time
+        updateTextFmt = {
+                'color': '#a60000',
+                'family': 'serif',
+                'weight': 'semibold',
+                'alpha': 0.9,
+                'size': 16,
+                'zorder': 10,
+                'va': 'center',
+                'ha': 'center'
+            }
+        updateTextFmt.update(kwargs)
+        updateText = 'Ship Locations Updated:  {}'.format(time.strftime('%B %d, %Y  %I:%M%p', time.localtime(lastUpdate)))
+        self.add_text_to_fig(x=txtX, y=txtY, text=updateText, **updateTextFmt)
 
     def save_map(self):
         """Save map to file"""

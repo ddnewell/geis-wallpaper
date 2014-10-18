@@ -1,2 +1,2 @@
 cd /Users/dnewell/dev/geis-wallpaper
-/usr/local/bin/python set_wallpaper.mac.py
+/usr/local/bin/python3 set_wallpaper.mac.py

@@ -89,5 +89,5 @@ if __name__ == '__main__':
     parser.add_option("-c", "--config", dest="config", help="Configuration file")
     (options, args) = parser.parse_args()
     # Retrieve tropical weather data from Wunderground API
-    print retrieve_satellite(options.key, options.target, options.config)
+    print(retrieve_satellite(options.key, options.target, options.config))
 

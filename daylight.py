@@ -13,7 +13,7 @@ from __future__ import division
 # Import required modules
 from itertools import product
 import math, datetime, pytz
-import Pysolar as solar
+from Pysolar import solar
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
@@ -122,7 +122,7 @@ class daylight:
         out[:,0] = np.repeat(arrays[0], m)
         if arrays[1:]:
             self._cartesian(arrays[1:], out=out[0:m,1:])
-            for j in xrange(1, arrays[0].size):
+            for j in range(1, arrays[0].size):
                 out[j*m:(j+1)*m,1:] = out[0:m,1:]
         return out
 
@@ -172,10 +172,10 @@ class daylight:
         # Create numpy array of shape (lat x lon x 4)
         irradiation = np.zeros((resolution[1], resolution[0], 4))
         # Loop through lats and lons
-        for i, j in product(xrange(resolution[0]), xrange(resolution[1])):
+        for i, j in product(range(resolution[0]), range(resolution[1])):
             irradiation[j][i][3] = self.daylight_at_point(lons[i], lats[j], fast)
-        # for i in xrange(resolution[0]):
-        #     for j in xrange(resolution[1]):
+        # for i in range(resolution[0]):
+        #     for j in range(resolution[1]):
         #         # Get irradiation at current lat/lon point (using specified method)
         #         irradiation[j][i][3] = self.daylight_at_point(lons[i], lats[j], fast)
         # Return lists of irradiation points
@@ -222,8 +222,8 @@ class daylight:
         lats = np.linspace(-90, 90, num=resolution)
         lons = np.linspace(-180, 180, num=resolution)
         term = []
-        for ilat in xrange(1, resolution+1):
-            for ilon in xrange(resolution):
+        for ilat in range(1, resolution+1):
+            for ilon in range(resolution):
                 az, el = _sun_azimuth_elevation(t, ut, lats[-ilat], lons[ilon], 0)
                 zen[-ilat, ilon] = el
             a = 90-zen[-ilat, :]

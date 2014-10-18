@@ -2,6 +2,6 @@
     "config": {
         "screen_size": [2560, 1280],
         "dpi": 96,
-        "darkness": 0.6
+        "darkness": 0.667
     }
 }

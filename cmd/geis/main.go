@@ -102,14 +102,21 @@ func main() {
 			if err := platform.SetWallpaperForScreen(t.screen, framePath); err != nil {
 				log.Printf("set wallpaper%s: %v", t.label, err)
 			}
-		case *register:
-			// One-time: write the stable path into the persisted wallpaper store
-			// (System Events). Done interactively at install so it borrows the
-			// terminal's Automation grant — the per-minute launchd run never needs it.
-			if err := platform.SetWallpaperAllDesktops(framePath); err != nil {
-				log.Printf("register wallpaper path: %v", err)
-			} else {
-				log.Printf("registered wallpaper path: %s", framePath)
+		default: // all displays / all Spaces
+			if *register {
+				// One-time, interactive: create a "template" Space pointing at our
+				// path via System Events (borrows the terminal's Automation grant).
+				if err := platform.SetWallpaperAllDesktops(framePath); err != nil {
+					log.Printf("register wallpaper path: %v", err)
+				}
+			}
+			// Propagate the image into EVERY desktop Space's store slot, so the
+			// killall reload refreshes them all — not just the active Space. Needs
+			// no permissions; only rewrites the store when a Space is missing it.
+			if regChanged, err := platform.RegisterAllSpaces(framePath); err != nil {
+				log.Printf("register spaces: %v", err)
+			} else if regChanged {
+				log.Printf("propagated wallpaper to all desktop spaces")
 			}
 		}
 		log.Printf("wallpaper updated: %s (%dx%d)%s", framePath, t.w, t.h, t.label)

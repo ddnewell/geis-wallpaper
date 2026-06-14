@@ -92,13 +92,17 @@ overlays are simply omitted.
 Known limitations
 -----------------
 
-- macOS exposes no public API to set *all Spaces*. GEIS instead registers a
-  **stable image path** once at install (`geis --register`, which may ask for
-  Automation access — this is the only time osascript is used), then each cycle
-  overwrites that file in place and reloads `WallpaperAgent`, which re-reads it
-  across every Space. The per-minute launchd renderer itself needs no
-  permissions. Side effect: a brief wallpaper reload (~1 s) each minute — raise
-  the renderer's `StartInterval` if you find it distracting.
+- macOS has no public API to set *all Spaces*, and stores wallpaper **per
+  Space**. GEIS handles this in three parts: (1) `geis --register` (run once at
+  install; may ask for Automation access — the only time osascript is used)
+  points the current Space at a **stable image path**; (2) each cycle the
+  renderer writes that path into every desktop Space's slot in the wallpaper
+  store (`com.apple.wallpaper/Store/Index.plist`) — no permissions needed, and
+  it only rewrites when a Space is missing it, so new desktops are picked up
+  automatically; (3) it overwrites the image in place and reloads
+  `WallpaperAgent`, which re-reads it across every Space. Side effect: a brief
+  wallpaper reload (~1 s) each minute — raise the renderer's `StartInterval` if
+  you find it distracting.
 - AIS ships require a free AISHub membership; wildfires require a free FIRMS key.
   Both are configured on the companion server, not the client.
 

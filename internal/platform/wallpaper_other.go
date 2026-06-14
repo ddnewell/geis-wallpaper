@@ -26,3 +26,6 @@ func SetWallpaperAllDesktops(path string) error { return errUnsupported }
 
 // RefreshSpaces is a no-op off macOS.
 func RefreshSpaces() error { return nil }
+
+// RegisterAllSpaces is a no-op off macOS.
+func RegisterAllSpaces(imagePath string) (bool, error) { return false, nil }

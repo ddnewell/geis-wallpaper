@@ -1,0 +1,46 @@
+{
+  "displays": {
+    "auto_detect": true,
+    "screens": [
+      { "width": 2560, "height": 1280, "primary": true }
+    ],
+    "render_per_display": false
+  },
+  "darkness": 0.667,
+  "solar": {
+    "colormap": "solar",
+    "day_alpha": 0.5,
+    "max_ghi": 1100,
+    "twilight_deg": 18
+  },
+  "satellite_above_solar": false,
+  "overlays": {
+    "satellite": true,
+    "storms": true,
+    "earthquakes": true,
+    "aurora": true,
+    "iss": true,
+    "ships": true,
+    "fires": true
+  },
+  "satellite": {
+    "layer": "nowcoast_global_longwave",
+    "alpha": 0.35
+  },
+  "earthquakes": {
+    "min_magnitude": 4.0
+  },
+  "companion": {
+    "enabled": true,
+    "base_url": "https://geis.weldedanvil.com"
+  },
+  "paths": {
+    "asset_dir": "",
+    "cache_dir": "",
+    "output_dir": "",
+    "clocks_file": ""
+  },
+  "output": {
+    "keep_last": 3
+  }
+}

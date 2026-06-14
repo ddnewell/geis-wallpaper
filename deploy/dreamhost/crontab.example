@@ -1,0 +1,4 @@
+# GEIS companion refresh — add with `crontab -e` on the DreamHost shell account.
+# Fetches every feed (incl. keyed AIS/FIRMS) and rewrites the served static
+# files every 10 minutes. Logs to the geis dir.
+*/10 * * * * /home/dh_r7wsei/geis/geisd -refresh -config /home/dh_r7wsei/geis/geisd-config.json >> /home/dh_r7wsei/geis/refresh.log 2>&1

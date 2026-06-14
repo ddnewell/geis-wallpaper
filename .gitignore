@@ -2,6 +2,18 @@
 .ds_store
 .DS_Store
 
+# Go
+/geis
+/geis-fetch
+/geisd
+/dispatch.fcgi
+*.test
+*.out
+
+# GEIS runtime artifacts
+/frames/
+*.local.json
+
 # Ignores python-specific files
 *.py[cod]
 

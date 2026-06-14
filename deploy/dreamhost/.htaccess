@@ -1,0 +1,15 @@
+# DreamHost FastCGI routing for geis.weldedanvil.com (web root: .../geis/prod).
+# Routes every request to dispatch.fcgi, preserving the path as PATH_INFO so the
+# Go mux sees clean routes (/payload.json, /satellite.png, /ships.json, /healthz).
+Options +ExecCGI
+AddHandler fcgid-script .fcgi
+
+RewriteEngine On
+RewriteBase /
+
+# Let the dispatcher itself pass through.
+RewriteRule ^dispatch\.fcgi - [L]
+
+# Everything else -> dispatch.fcgi/<path>  (path becomes PATH_INFO)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ dispatch.fcgi/$1 [QSA,L]

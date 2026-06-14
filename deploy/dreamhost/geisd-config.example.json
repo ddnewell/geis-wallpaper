@@ -1,0 +1,28 @@
+{
+  "_comment": "Keep this file OUTSIDE the web root (web root is /home/dh_r7wsei/geis/prod). It holds the API keys.",
+  "data_dir": "/home/dh_r7wsei/geis/data",
+  "satellite": { "layer": "nowcoast_global_longwave" },
+  "earthquakes": { "min_magnitude": 4.0 },
+  "overlays": {
+    "satellite": true,
+    "storms": true,
+    "earthquakes": true,
+    "aurora": true,
+    "iss": true,
+    "ships": true,
+    "fires": true
+  },
+  "aishub": {
+    "_comment": "Free AISHub membership username. Optional bbox (0 = whole world).",
+    "username": "YOUR_AISHUB_USERNAME",
+    "lat_min": 0, "lat_max": 0, "lon_min": 0, "lon_max": 0
+  },
+  "firms": {
+    "_comment": "Free NASA FIRMS MAP_KEY. source e.g. VIIRS_SNPP_NRT; area 'world' or 'west,south,east,north'. min_frp drops low-intensity detections (MW) to keep the overlay legible.",
+    "map_key": "YOUR_FIRMS_MAP_KEY",
+    "source": "VIIRS_SNPP_NRT",
+    "area": "world",
+    "day_range": 1,
+    "min_frp": 20
+  }
+}

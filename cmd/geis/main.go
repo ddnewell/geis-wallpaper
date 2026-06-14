@@ -29,6 +29,7 @@ import (
 func main() {
 	cfgPath := flag.String("config", "", "path to config.json")
 	dryRun := flag.Bool("dry-run", false, "render and write the frame but do not set the wallpaper")
+	register := flag.Bool("register", false, "register the wallpaper path with the OS (run once, interactively; may prompt for Automation access). The per-minute launchd renderer does not need this.")
 	flag.Parse()
 
 	log.SetFlags(log.LstdFlags)
@@ -80,7 +81,6 @@ func main() {
 	// desktops rather than only the current Space.
 	targets := renderTargets(cfg)
 	keep := make(map[string]bool, len(targets))
-	wallpaperSet := false
 	for _, t := range targets {
 		out := render.CropToScreen(c.Img, t.w, t.h)
 		name := "wallpaper.png"
@@ -96,24 +96,30 @@ func main() {
 			log.Printf("dry-run: wrote %s (%dx%d)%s", framePath, t.w, t.h, t.label)
 			continue
 		}
-		if t.screen < 0 {
-			err = platform.SetWallpaper(framePath) // every display, no TCC prompt under launchd
-		} else {
-			err = platform.SetWallpaperForScreen(t.screen, framePath)
+		switch {
+		case t.screen >= 0:
+			// Per-display: NSWorkspace targets a specific screen's current Space.
+			if err := platform.SetWallpaperForScreen(t.screen, framePath); err != nil {
+				log.Printf("set wallpaper%s: %v", t.label, err)
+			}
+		case *register:
+			// One-time: write the stable path into the persisted wallpaper store
+			// (System Events). Done interactively at install so it borrows the
+			// terminal's Automation grant — the per-minute launchd run never needs it.
+			if err := platform.SetWallpaperAllDesktops(framePath); err != nil {
+				log.Printf("register wallpaper path: %v", err)
+			} else {
+				log.Printf("registered wallpaper path: %s", framePath)
+			}
 		}
-		if err != nil {
-			log.Printf("set wallpaper%s: %v", t.label, err)
-		} else {
-			wallpaperSet = true
-			log.Printf("wallpaper updated: %s (%dx%d)%s", framePath, t.w, t.h, t.label)
-		}
+		log.Printf("wallpaper updated: %s (%dx%d)%s", framePath, t.w, t.h, t.label)
 	}
 
 	if !*dryRun {
-		if wallpaperSet {
-			// Force every Space to reload the (in-place updated) image.
-			_ = platform.RefreshSpaces()
-		}
+		// Reload WallpaperAgent so every Space re-reads the (in-place updated)
+		// stable path. This needs no permissions and is what propagates the
+		// update beyond the active Space.
+		_ = platform.RefreshSpaces()
 		platform.CleanupFrames(outDir, keep)
 	}
 }

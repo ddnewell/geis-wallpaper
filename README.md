@@ -20,7 +20,7 @@ How it works
 Two tiny per-user launchd agents, deliberately decoupled so a slow network can
 never block the wallpaper:
 
-- **`geis`** (renderer, every ~5 min) — *never touches the network*. Reads the
+- **`geis`** (renderer, every ~1 min) — *never touches the network*. Reads the
   base map, `clocks.json`, and the local cache; computes the solar layer for
   *now*; composites everything; writes the PNG to a stable path; sets it via the
   official `NSWorkspace.setDesktopImageURL` API (no permission prompt); then
@@ -92,10 +92,13 @@ overlays are simply omitted.
 Known limitations
 -----------------
 
-- macOS exposes no public API to set *all Spaces*, so GEIS writes to a stable
-  image path and reloads `WallpaperAgent` each cycle to refresh every Space.
-  Side effect: a brief wallpaper reload (~1 s) each cycle — raise the
-  `StartInterval` in the LaunchAgent if you find it distracting.
+- macOS exposes no public API to set *all Spaces*. GEIS instead registers a
+  **stable image path** once at install (`geis --register`, which may ask for
+  Automation access — this is the only time osascript is used), then each cycle
+  overwrites that file in place and reloads `WallpaperAgent`, which re-reads it
+  across every Space. The per-minute launchd renderer itself needs no
+  permissions. Side effect: a brief wallpaper reload (~1 s) each minute — raise
+  the renderer's `StartInterval` if you find it distracting.
 - AIS ships require a free AISHub membership; wildfires require a free FIRMS key.
   Both are configured on the companion server, not the client.
 

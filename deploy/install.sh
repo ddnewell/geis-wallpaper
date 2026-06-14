@@ -53,8 +53,8 @@ if [ "$HAVE_FETCH" = "1" ]; then
   install_agent "$FETCH_LABEL" "$REPO_DIR/deploy/geis-fetch.plist.template"
 fi
 
-echo "==> Running once now"
-"$INSTALL_DIR/geis" --config "$INSTALL_DIR/config.json" || true
+echo "==> Registering the wallpaper path (may prompt once for Automation access — click OK)"
+"$INSTALL_DIR/geis" --register --config "$INSTALL_DIR/config.json" || true
 
-echo "==> Done. Renderer runs every 5 min; fetcher every 15 min (if installed)."
+echo "==> Done. Renderer runs every 1 min on every Space; fetcher every 15 min (if installed)."
 echo "    Uninstall with: deploy/uninstall.sh"
